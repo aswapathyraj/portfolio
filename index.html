@@ -17,13 +17,84 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        :root {
+            /* Dark Theme Colors */
+            --primary-color: #a3e635; /* lime-400 */
+            --primary-hover: #b6f03a;
+            --bg-color: #1d1e20; /* Base background */
+            --text-color: #f5f5f7; /* Off-white text */
+            --section-bg: #25272a; /* Section backgrounds */
+            --card-bg: #2d2f33; /* Cards and containers */
+            --border-color: #3a3d42; /* Borders and dividers */
+            --muted-text: #8e8e93; /* Secondary text */
+            --timeline-dot: #a3e635; /* Resume timeline dots */
+        }
+
+        [data-theme="light"] {
+            /* Light Theme Colors */
+            --primary-color: #4d7c0f;
+            --primary-hover: #5e8f1a;
+            --bg-color: #ffffff;
+            --text-color: #1d1d1f;
+            --section-bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --border-color: #d8d8dc;
+            --muted-text: #636366;
+            --timeline-dot: #4d7c0f;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             -webkit-text-size-adjust: 100%;
             -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: none; /* Hide default cursor */
         }
         .logo {
             font-family: inherit;
+        }
+        
+        /* Custom cursor styles */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            mix-blend-mode: difference;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, background-color 0.3s ease;
+        }
+        
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Hover effects for cursor */
+        a:hover ~ .cursor,
+        button:hover ~ .cursor,
+        .cursor.hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background-color: var(--text-color);
+        }
+        
+        a:hover ~ .cursor-follower,
+        button:hover ~ .cursor-follower,
+        .cursor-follower.hover {
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: rgba(163, 230, 53, 0.2);
         }
         
         /* Different background for mobile */
@@ -38,8 +109,51 @@
             .hero-cutout {
                 display: none !important;
             }
+            
+            /* Show default cursor on mobile and hide custom cursor */
+            body {
+                cursor: auto;
+            }
+            .cursor, .cursor-follower {
+                display: none;
+            }
         }
         
+        /* Theme toggle button */
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            width: 36px; /* Fixed width for circular shape */
+            height: 36px; /* Fixed height for circular shape */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%; /* Ensure perfect circle */
+        }
+        
+        .theme-toggle:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+        
+        /* Dark mode specific styles */
+        .dark-mode-section {
+            background-color: var(--section-bg);
+            transition: background-color 0.3s ease;
+        }
+        
+        .dark-mode-card {
+            background-color: var(--card-bg);
+            transition: background-color 0.3s ease;
+        }
+        
+        .dark-mode-text {
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
         /* iPhone 14 Pro Max specific adjustments */
         @media only screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) {
             /* Fix for the dynamic island area */
@@ -66,11 +180,13 @@
             }
         }
         
-        /* Disable animations on mobile */
-        @media (max-width: 768px) {
-            [data-aos] {
-                opacity: 1 !important;
-                transform: none !important;
+        /* Disable animations when reduced motion is preferred */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
             }
         }
         
@@ -81,24 +197,121 @@
                 min-height: -webkit-fill-available !important;
             }
         }
+        
+        /* Fade-in animation classes */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 1s ease-in-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-down {
+            animation: fadeInDown 1s ease-in-out forwards;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-left {
+            animation: fadeInLeft 1s ease-in-out forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .fade-in-right {
+            animation: fadeInRight 1s ease-in-out forwards;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        
+        @keyframes fadeInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Animation delays */
+        .delay-100 {
+            animation-delay: 100ms;
+        }
+        
+        .delay-200 {
+            animation-delay: 200ms;
+        }
+        
+        .delay-300 {
+            animation-delay: 300ms;
+        }
+        
+        .delay-400 {
+            animation-delay: 400ms;
+        }
+        
+        .delay-500 {
+            animation-delay: 500ms;
+        }
     </style>
 </head>
 <body class="bg-black text-white">
+    <!-- Custom Cursor Elements -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
     <!-- Navigation -->
     <nav id="navbar" class="fixed top-0 w-full bg-transparent z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center" data-aos="fade-down">
-            <div class="text-2xl font-bold text-lime-400 logo">MyPortfolio</div>
-            <!-- Mobile menu button -->
-            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-            <ul id="nav-menu" class="hidden md:flex space-x-6">
-                <li><a href="#home" class="text-lg text-white hover:text-lime-400 transition">Home</a></li>
-                <li><a href="#about" class="text-lg text-white hover:text-lime-400 transition">About</a></li>
-                <li><a href="#resume" class="text-lg text-white hover:text-lime-400 transition">Resume</a></li>
-                <li><a href="#services" class="text-lg text-white hover:text-lime-400 transition">Services</a></li>
-                <li><a href="#contact" class="text-lg text-white hover:text-lime-400 transition">Contact</a></li>
-            </ul>
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center fade-in-down">
+            <div class="flex items-center space-x-4">
+                <div class="text-2xl font-bold text-lime-400 logo">MyPortfolio</div>
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="theme-toggle focus:outline-none">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+            <div class="flex items-center">
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <ul id="nav-menu" class="hidden md:flex space-x-6">
+                    <li><a href="#home" class="text-lg text-white hover:text-lime-400 transition">Home</a></li>
+                    <li><a href="#about" class="text-lg text-white hover:text-lime-400 transition">About</a></li>
+                    <li><a href="#resume" class="text-lg text-white hover:text-lime-400 transition">Resume</a></li>
+                    <li><a href="#services" class="text-lg text-white hover:text-lime-400 transition">Services</a></li>
+                    <li><a href="#contact" class="text-lg text-white hover:text-lime-400 transition">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -106,9 +319,7 @@
     <section id="home" class="min-h-screen relative flex items-center justify-center pt-16 md:pt-0">
         <!-- Background Image (Different for mobile) -->
         <div
-            class="hero-bg absolute inset-0 bg-cover bg-center"
-            data-aos="fade-up"
-            data-aos-delay="50"
+            class="hero-bg absolute inset-0 bg-cover bg-center fade-in"
             loading="lazy"
         ></div>
 
@@ -118,14 +329,14 @@
         <!-- Content -->
         <div class="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-center md:justify-between min-h-screen py-20 md:py-0">
             <!-- Text Content - Centered on mobile -->
-            <div class="text-center md:text-left max-w-2xl md:ml-16 order-2 md:order-1 mt-10 md:mt-0" data-aos="fade-up" data-aos-delay="100">
-                <h1 class="text-4xl md:text-5xl font-bold mb-2 text-white">Aswapathy Raj</h1>
-                <h3 class="text-xl mb-4 text-gray-200">
+            <div class="text-center md:text-left max-w-2xl md:ml-16 order-2 md:order-1 mt-10 md:mt-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-2 text-white fade-in-up delay-100">Aswapathy Raj</h1>
+                <h3 class="text-xl mb-4 text-gray-200 fade-in-up delay-200">
                     I'm a <span id="typed" class="text-lime-400"></span>
                 </h3>
 
                 <!-- Social Icons -->
-                <div class="flex justify-center md:justify-start space-x-4 mb-6 text-white" data-aos="fade-up" data-aos-delay="150">
+                <div class="flex justify-center md:justify-start space-x-4 mb-6 text-white fade-in-up delay-300">
                     <a href="https://www.facebook.com/aswapathy.raj" target="_blank" class="hover:text-lime-400" aria-label="Facebook">
                         <i class="fab fa-facebook-f fa-lg"></i>
                     </a>
@@ -141,7 +352,7 @@
                 </div>
 
                 <!-- Buttons -->
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start" data-aos="fade-up" data-aos-delay="200">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start fade-in-up delay-400">
                     <a
                         href="#contact"
                         class="bg-lime-400 text-black px-6 py-3 sm:py-2 rounded-full font-semibold hover:bg-white hover:text-lime-400 transition duration-300 text-center"
@@ -152,13 +363,13 @@
                         href="#services"
                         class="border border-white hover:border-lime-400 text-white px-6 py-3 sm:py-2 rounded-full font-semibold hover:bg-lime-400 hover:text-black transition duration-300 text-center"
                     >
-                        My Works
+                        My Services
                     </a>
                 </div>
             </div>
 
             <!-- Cutout Image (Hidden on mobile) -->
-            <div class="hero-cutout order-1 md:order-2 mt-0 md:mt-0 md:mr-16" data-aos="fade-up" data-aos-delay="250">
+            <div class="hero-cutout order-1 md:order-2 mt-0 md:mt-0 md:mr-16 fade-in-right delay-500">
                 <img
                     src="cutout3.webp"
                     alt="Profile"
@@ -172,11 +383,11 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-20 bg-gray-100">
+    <section id="about" class="py-20 dark-mode-section">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-black mb-8" data-aos="fade-up">About Me</h2>
-            <div class="flex flex-col md:flex-row items-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
+            <h2 class="text-3xl font-bold text-center dark-mode-text mb-8 fade-in-up">About Me</h2>
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center fade-in-left delay-100">
                     <img
                         src="cutout5.webp"
                         alt="About"
@@ -186,18 +397,18 @@
                         height="400"
                     />
                 </div>
-                <div class="md:w-2/3 md:pl-8">
-                    <h3 class="text-2xl font-semibold text-black mb-4" data-aos="fade-up" data-aos-delay="150">Web Developer & Designer</h3>
-                    <p class="text-black mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="md:w-2/3 md:pl-8 fade-in-right delay-200">
+                    <h3 class="text-2xl font-semibold dark-mode-text mb-4">Web Developer & Designer</h3>
+                    <p class="dark-mode-text mb-4">
                         I'm Aswapathy Raj, a BCA student at IHRD MVK, Kerala, with a passion for coding, AI tools, and creative problem-solving. I've consistently performed well academically and taken on leadership roles throughout school. I also enjoy photography, traveling, singing, and drawing. I'm always eager to learn and grow as a developer and designer.
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-black" data-aos="fade-up" data-aos-delay="250">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 dark-mode-text fade-in delay-300">
                         <div><strong>Name:</strong> Aswapathy Raj </div>
                         <div><strong>Email:</strong> aswapathyraj@gmail.com</div>
                         <div><strong>Phone:</strong> +91 9746441529</div>
                         <div><strong>Location:</strong> Mavelikara, Alappuzha</div>
                     </div>
-                    <a href="https://drive.google.com/file/d/1pDEpCpQv4mShvwC_hKdZ0kfqUiTTAacy/view?usp=sharing" target="_blank" class="mt-6 inline-block border border-lime-400 bg-white text-black px-6 py-2 rounded-full hover:bg-lime-400 hover:text-black transition duration-300 w-full md:w-auto text-center" data-aos="fade-up" data-aos-delay="300">
+                    <a href="https://drive.google.com/file/d/1pDEpCpQv4mShvwC_hKdZ0kfqUiTTAacy/view?usp=sharing" target="_blank" class="mt-6 inline-block border border-lime-400 bg-white text-black px-6 py-2 rounded-full hover:bg-lime-400 hover:text-black transition duration-300 w-full md:w-auto text-center fade-in-up delay-400">
                         Download CV
                     </a>
                 </div>
@@ -211,14 +422,14 @@
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
 
         <!-- Content -->
-        <div class="relative max-w-6xl mx-auto px-6 md:px-12 text-white z-10" data-aos="fade-up">
-            <h2 class="text-4xl font-bold text-center mb-12">Resume</h2>
+        <div class="relative max-w-6xl mx-auto px-6 md:px-12 text-white z-10">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in-down">Resume</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                 
                 <!-- Experience -->
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <h3 class="text-2xl font-semibold mb-6">Experience</h3>
-                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative" data-aos="fade-up" data-aos-delay="150">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 fade-in-left">Experience</h3>
+                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative fade-in-up delay-100">
                         <div class="absolute -left-2 top-2 w-4 h-4 bg-white rounded-full"></div>
                         <h4 class="text-xl font-bold">Business Development Executive</h4>
                         <p class="text-gray-400">Supportta Pvt Ltd | 2025 – Present</p>
@@ -227,7 +438,7 @@
                             <li>Engaging with clients and contributing to strategic planning and partnerships.</li>
                         </ul>
                     </div>
-                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative" data-aos="fade-up" data-aos-delay="200">
+                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative fade-in-up delay-200">
                         <div class="absolute -left-2 top-2 w-4 h-4 bg-white rounded-full"></div>
                         <h4 class="text-xl font-bold">Digital Marketing Intern</h4>
                         <p class="text-gray-400">Supportta Pvt Ltd | 2025 – Present</p>
@@ -239,21 +450,21 @@
                 </div>
 
                 <!-- Education -->
-                <div data-aos="fade-up" data-aos-delay="250">
-                    <h3 class="text-2xl font-semibold mb-6">Education</h3>
-                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative" data-aos="fade-up" data-aos-delay="300">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 fade-in-right">Education</h3>
+                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative fade-in-up delay-100">
                         <div class="absolute -left-2 top-2 w-4 h-4 bg-white rounded-full"></div>
                         <h4 class="text-xl font-bold">BCA (Bachelor of Computer Applications)</h4>
                         <p class="text-gray-400">IHRD MVK, Kerala | 2023 - Ongoing</p>
                         <p class="mt-2 text-gray-300">Currently pursuing BCA with a strong interest in coding and AI tools.</p>
                     </div>
-                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative" data-aos="fade-up" data-aos-delay="350">
+                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative fade-in-up delay-200">
                         <div class="absolute -left-2 top-2 w-4 h-4 bg-white rounded-full"></div>
                         <h4 class="text-xl font-bold">Higher Secondary (+2)</h4>
                         <p class="text-gray-400">HSS CTK, Kerala State Board | 2021 - 2023</p>
                         <p class="mt-2 text-gray-300">Completed with 89%, focused on computer science and mathematics.</p>
                     </div>
-                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative" data-aos="fade-up" data-aos-delay="400">
+                    <div class="mb-8 pl-8 border-l-2 border-gray-500 relative fade-in-up delay-300">
                         <div class="absolute -left-2 top-2 w-4 h-4 bg-white rounded-full"></div>
                         <h4 class="text-xl font-bold">SSLC (10th Grade)</h4>
                         <p class="text-gray-400">HSS CTK, Kerala State Board | 2019 - 2021</p>
@@ -265,24 +476,24 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-20 bg-gray-100">
+    <section id="services" class="py-20 dark-mode-section">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center text-black mb-8" data-aos="fade-up">Services</h2>
+            <h2 class="text-3xl font-bold text-center dark-mode-text mb-8 fade-in-down">Services</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="0">
+                <div class="dark-mode-card p-6 rounded-lg shadow-md hover:shadow-lg transition fade-in delay-100">
                     <div class="text-lime-400 text-4xl mb-4"><i class="fas fa-code"></i></div>
-                    <h3 class="text-xl font-semibold text-black mb-2">Web Development</h3>
-                    <p class="text-black">Building responsive and scalable web applications.</p>
+                    <h3 class="text-xl font-semibold dark-mode-text mb-2">Web Development</h3>
+                    <p class="dark-mode-text">Building responsive and scalable web applications.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="100">
+                <div class="dark-mode-card p-6 rounded-lg shadow-md hover:shadow-lg transition fade-in delay-200">
                     <div class="text-lime-400 text-4xl mb-4"><i class="fas fa-paint-brush"></i></div>
-                    <h3 class="text-xl font-semibold text-black mb-2">UI/UX Design</h3>
-                    <p class="text-black">Creating intuitive and visually appealing interfaces.</p>
+                    <h3 class="text-xl font-semibold dark-mode-text mb-2">UI/UX Design</h3>
+                    <p class="dark-mode-text">Creating intuitive and visually appealing interfaces.</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="200">
+                <div class="dark-mode-card p-6 rounded-lg shadow-md hover:shadow-lg transition fade-in delay-300">
                     <div class="text-lime-400 text-4xl mb-4"><i class="fas fa-mobile-alt"></i></div>
-                    <h3 class="text-xl font-semibold text-black mb-2">Photo Editing</h3>
-                    <p class="text-black">Enhancing and refining images by adjusting colors, brightness, and removing imperfections.</p>
+                    <h3 class="text-xl font-semibold dark-mode-text mb-2">Photo Editing</h3>
+                    <p class="dark-mode-text">Enhancing and refining images by adjusting colors, brightness, and removing imperfections.</p>
                 </div>
             </div>
         </div>
@@ -295,13 +506,13 @@
 
         <!-- Content -->
         <div class="container mx-auto px-4 relative z-10">
-            <h2 class="text-3xl font-bold text-center text-white mb-8" data-aos="fade-up">Contact Me</h2>
+            <h2 class="text-3xl font-bold text-center text-white mb-8 fade-in-down">Contact Me</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Contact Information -->
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <h3 class="text-2xl font-semibold text-white mb-4">Get in Touch</h3>
-                    <p class="text-white mb-4">Feel free to reach out for collaborations or just a friendly chat!</p>
-                    <div class="space-y-4 text-white" data-aos="fade-up" data-aos-delay="150">
+                <div>
+                    <h3 class="text-2xl font-semibold text-white mb-4 fade-in-left">Get in Touch</h3>
+                    <p class="text-white mb-4 fade-in-left delay-100">Feel free to reach out for collaborations or just a friendly chat!</p>
+                    <div class="space-y-4 text-white fade-in-left delay-200">
                         <div class="flex items-center">
                             <i class="fas fa-map-marker-alt text-white mr-2" aria-hidden="true"></i>
                             <p>Vyasa Bhavan Erezha South PO Chettikulangara Mavelikara Alappuzha Kerala, 690106</p>
@@ -315,7 +526,7 @@
                             <a href="mailto:aswapathyraj@gmail.com" class="hover:text-lime-400 transition-colors">aswapathyraj@gmail.com</a>
                         </div>
                     </div>
-                    <div class="flex space-x-4 mt-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex space-x-4 mt-6 fade-in-left delay-300">
                         <a href="https://www.facebook.com/aswapathy.raj" target="_blank" rel="noopener noreferrer" class="text-white hover:text-lime-400 transition-colors" aria-label="Facebook profile">
                             <i class="fab fa-facebook-f fa-lg"></i>
                         </a>
@@ -329,12 +540,12 @@
                 </div>
 
                 <!-- Contact Form -->
-                <div data-aos="fade-up" data-aos-delay="250">
-                    <form action="https://formsubmit.co/aswapathyraj@gmail.com" method="POST" class="space-y-4">
+                <div>
+                    <form action="https://formsubmit.co/aswapathyraj@gmail.com" method="POST" class="space-y-4 fade-in-right delay-100">
                         <input type="hidden" name="_next" value="thankyou.html">
                         <input type="hidden" name="_captcha" value="false">
 
-                        <div>
+                        <div class="fade-in-right delay-150">
                             <label for="name" class="sr-only">Your Name</label>
                             <input
                                 type="text"
@@ -345,7 +556,7 @@
                                 required
                             />
                         </div>
-                        <div>
+                        <div class="fade-in-right delay-200">
                             <label for="email" class="sr-only">Your Email</label>
                             <input
                                 type="email"
@@ -356,7 +567,7 @@
                                 required
                             />
                         </div>
-                        <div>
+                        <div class="fade-in-right delay-250">
                             <label for="subject" class="sr-only">Subject</label>
                             <input
                                 type="text"
@@ -367,7 +578,7 @@
                                 required
                             />
                         </div>
-                        <div>
+                        <div class="fade-in-right delay-300">
                             <label for="message" class="sr-only">Message</label>
                             <textarea
                                 id="message"
@@ -380,14 +591,14 @@
                         </div>
                         <button
                             type="submit"
-                            class="w-full border border-lime-400 bg-transparent text-white px-6 py-3 rounded-full hover:bg-lime-400 hover:text-black transition-colors"
+                            class="w-full border border-lime-400 bg-transparent text-white px-6 py-3 rounded-full hover:bg-lime-400 hover:text-black transition-colors fade-in-right delay-350"
                         >
                             Send Message
                         </button>
                     </form>
                 </div>
             </div>
-            <div class="text-center text-gray-300 mt-8" data-aos="fade-up" data-aos-delay="300">
+            <div class="text-center text-gray-300 mt-8 fade-in delay-500">
                 <p>© 2025 Aswapathy Raj. All rights reserved.</p>
             </div>
         </div>
@@ -395,23 +606,46 @@
 
     <!-- Deferred JavaScript -->
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js" defer></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
     <script defer>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AOS
-            AOS.init({
-                duration: 800,
-                easing: 'ease-in-out',
-                once: true,
-                disable: window.innerWidth < 768 // Disable on mobile
-            });
-
             // Initialize Typed.js
             const typed = new Typed('#typed', {
                 strings: ['Web Developer', 'Designer', 'Freelancer'],
                 typeSpeed: 100,
                 backSpeed: 60,
                 loop: true,
+            });
+
+            // Theme Toggle Functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const html = document.documentElement;
+            
+            // Set default theme to light, overridden by saved theme if it exists
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            // Apply the theme
+            if (savedTheme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                html.removeAttribute('data-theme');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                if (html.getAttribute('data-theme') === 'light') {
+                    // Switch to dark mode
+                    html.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'dark');
+                    themeIcon.classList.replace('fa-sun', 'fa-moon');
+                } else {
+                    // Switch to light mode
+                    html.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeIcon.classList.replace('fa-moon', 'fa-sun');
+                }
             });
 
             // Mobile menu toggle
@@ -480,6 +714,64 @@
                         target.scrollIntoView({ behavior: 'smooth' });
                     }
                 });
+            });
+            
+            // Custom cursor implementation
+            const cursor = document.querySelector('.cursor');
+            const cursorFollower = document.querySelector('.cursor-follower');
+            
+            // Only initialize cursor on non-mobile devices
+            if (window.innerWidth > 767) {
+                document.addEventListener('mousemove', (e) => {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    
+                    // Add slight delay to follower
+                    setTimeout(() => {
+                        cursorFollower.style.left = e.clientX + 'px';
+                        cursorFollower.style.top = e.clientY + 'px';
+                    }, 100);
+                });
+                
+                // Add hover effects to interactive elements
+                const interactiveElements = document.querySelectorAll('a, button, input[type="submit"], input[type="button"], [data-cursor-hover]');
+                
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursor.classList.add('hover');
+                        cursorFollower.classList.add('hover');
+                    });
+                    
+                    el.addEventListener('mouseleave', () => {
+                        cursor.classList.remove('hover');
+                        cursorFollower.classList.remove('hover');
+                    });
+                });
+            }
+            
+            // Intersection Observer for fade-in animations
+            const fadeElements = document.querySelectorAll('.fade-in, .fade-in-up, .fade-in-down, .fade-in-left, .fade-in-right');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            fadeElements.forEach(el => {
+                // Don't animate if reduced motion is preferred
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    observer.observe(el);
+                } else {
+                    // Immediately show elements if reduced motion is preferred
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                }
             });
         });
     </script>
