@@ -55,7 +55,11 @@ A modern, elegant, and responsive personal portfolio website built using HTML, T
 
 ## 🖼️ Screenshots
 
-_Add images here of your hero section, about section, and responsive view._
+![Preview](/preview-images/preview.png)
+![Preview](/preview-images/preview2.png)
+![Preview](/preview-images/preview3.png)
+![Preview](/preview-images/preview4.png)
+![Preview](/preview-images/preview5.png)
 
 ---
 
