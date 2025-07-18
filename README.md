@@ -2,7 +2,7 @@
 
 A modern, elegant, and responsive personal portfolio website built using HTML, Tailwind CSS, and JavaScript. This site showcases my background, skills, services, and contact information — with smooth animations, dark/light theme toggle, and custom cursors for a unique user experience.
 
-![Preview](preview.png)
+![Preview](/preview-images/preview.png)
 <!-- Replace with your actual screenshot -->
 
 ---
